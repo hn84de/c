@@ -1,0 +1,32 @@
+using System;
+using System.Net;
+using System.Threading;
+using HtmlAgilityPack;
+
+namespace CsharpWebScraping
+{
+    class Program
+    {
+        private const int V = 3;
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine(anyPage(0));
+        }
+        static string anyPage(int pagenum){
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument document = web.Load("https://www.newegg.com/tools/laptop-finder");
+            Thread.Sleep(2000);
+            
+            var tbodyNode = document.DocumentNode.SelectSingleNode("//tbody");
+            var tdActionNode = tbodyNode.ChildNodes[V].SelectSingleNode(".//*[contains(@class,'td-action')]");
+            var itemActionNode = tdActionNode.SelectSingleNode(".//*[contains(@class,'item-action grid col-w-3')]");
+            var goodsPriceCurrentNode = itemActionNode.SelectSingleNode(".//*[contains(@class,'goods-price-current')]");
+            var goodsPriceNode = goodsPriceCurrentNode.SelectSingleNode(".//*[contains(@class,'goods-price font-s')]");
+            var goodsPriceValueNode = goodsPriceNode.SelectSingleNode(".//*[contains(@class,'goods-price-value')]");
+            string price = goodsPriceValueNode.ChildNodes[0].InnerHtml + goodsPriceValueNode.ChildNodes[1].InnerHtml;
+            
+            return price;
+        }
+    }
+}
